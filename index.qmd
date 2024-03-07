@@ -69,37 +69,23 @@ Read in the data in R (5 pts) and in python (5 pts).
 Make sure to load any packages which are necessary to run your code in the setup chunks at the beginning of the document.
 
 ```{r r-read-data}
-data <- "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-01-16/polling_places.csv"
 
-tidy_tuesday <- read.csv(data)
-tidy_tuesday
 ```
 
 ```{python py-read-data}
-data = "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-01-16/polling_places.csv"
 
-tidy_tuesday = pd.read_csv(data, low_memory=False)
-print(tidy_tuesday)
 ```
 
 ## Summarize the Data
 
 Using any method you choose from either language, fill in the following table.
 
-Language used: <R language>
+Language used: <Fill in>
 
 Make sure your terms match the language you're using and the code you provided above. If you use code to get these values (which is probably a good idea), please use the code chunks provided here:
 
 ```{r r-data-summary-code}
-#number of missing values
-missing_val <- sapply(tidy_tuesday, function(x) sum(is.na(x)))
-missing_val
-
-#number of unique values excluding missing values
-unique_val <- sapply(tidy_tuesday, function(x) n_distinct(na.omit(x)))
-unique_val
-
-
+summary(tidy_tuesday)
 ```
 
 ```{python py-data-summary-code}
