@@ -1,6 +1,6 @@
 ---
 title: 251 Midterm Exam
-author: Firstname Lastname
+author: Elizabeth Nguyen
 date: '2024-03-07'
 execute:
   error: false
@@ -17,16 +17,24 @@ The raw CSV data is available at https://raw.githubusercontent.com/rfordatascien
 
 ```{r r-setup}
 # load any R packages you use in this chunk
-
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(stringr)
 ```
 
 ```{python py-setup}
 # load any python packages you use in this chunk
-
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt 
 ```
 
 # Data Input - Polling Places
 (30 pts)
+
+polling_places
 
 ## Data File Inspection
 
@@ -42,16 +50,17 @@ election_date,state,county_name,jurisdiction,jurisdiction_type,precinct_id,preci
 ```
 
 1.  What is the file delimiter? (1 pt)    
-<Delete this and replace with your answer>
+The file delimiter is a comma (','), CSV also known as Comma-Separated Values.
 
 2.  What is the header? (1 pt)    
-<Delete this and replace with your answer>
+The header is
+election_date,state,county_name,jurisdiction,jurisdiction_type,precinct_id,precinct_name,polling_place_id,location_type,name,address,notes,source,source_date,source_notes
 
 3.  How many columns will the data have when it is read in using R or Python? (1 pt)    
-<Delete this and replace with your answer>
+15 columns
 
 4.  How is the data stored differently in the address field compared to the name field (1 pt), and why is this different handling necessary (1 pt)?    
-<Delete this and replace with your answer>
+The data is stored differently in the address field compared to the name field when the "name" field just contains characters and spaces, while the "address" field is put in quotation marks because they contain other special characters and punctuation. This different handling is necessary because since the "address" field could contain commas between the strings. Since the file delimiter used to separate the values is a comma, putting the "address" field in quotations is necessary to not confuse the different values.
 
 ## Reading the Data
 
@@ -60,7 +69,10 @@ Read in the data in R (5 pts) and in python (5 pts).
 Make sure to load any packages which are necessary to run your code in the setup chunks at the beginning of the document.
 
 ```{r r-read-data}
+data <- "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-01-16/polling_places.csv"
 
+tidy_tuesday <- read.csv(data)
+tidy_tuesday
 ```
 
 ```{python py-read-data}
