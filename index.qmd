@@ -80,12 +80,12 @@ Make sure to load any packages which are necessary to run your code in the setup
 
 Using any method you choose from either language, fill in the following table.
 
-Language used: <Fill in>
+Language used: <R Language>
 
 Make sure your terms match the language you're using and the code you provided above. If you use code to get these values (which is probably a good idea), please use the code chunks provided here:
 
 ```{r r-data-summary-code}
-summary(tidy_tuesday)
+
 ```
 
 ```{python py-data-summary-code}
