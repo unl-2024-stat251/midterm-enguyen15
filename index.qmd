@@ -146,7 +146,7 @@ When computing the number of unique values, exclude missing values.
 For this part of the exam, you'll use your student ID to get the state you'll be working with.
 
 ```{r student-id-state-assign}
-my_nuid <- 96582245 # Change this value to your NUID
+my_nuid <- 21947359 # Change this value to your NUID
 state_ids <- readRDS("state-ids.RDS")
 my_state <- state_ids$state[my_nuid%%37]
 print(my_state)
