@@ -120,7 +120,7 @@ unique_val
 When computing the number of unique values, exclude missing values.
 
 | Column Name       | Data Type (5 pts) | \# missing values (5 pts) | \# unique values (5 pts) |
-|---------------|---------------|---------------------|---------------------|
+|------------------|------------------|------------------|------------------|
 | election_date     | character         | 0                         | 7                        |
 | state             | character         | 0                         | 39                       |
 | county_name       | character         | 114568                    | 1880                     |
@@ -167,15 +167,27 @@ Add new rows by moving to a new line, and separate each cell in the table with `
 `|` is on the key above the enter key and shares a key with `\` (backslash).
 You will need to hold shift down.
 
-| Step \# | Verb | Arguments                      |
-|---------|------|--------------------------------|
-| 1       | ...  | ... <!-- replace this line --> |
+| Step \# | Verb        | Arguments                            |
+|---------|-------------|--------------------------------------|
+| 1       | filter()    | state == "SC"                        |
+| 2       | group_by()  | group_by(election_date, county_name) |
+| 3       | summarise() | summarise(polling_place_id)          |
 
 ## Code
 
 (10 pts)
 
 Write code in R or python to execute the steps you outlined above.
+
+```{r}
+state <- filter(tidy_tuesday, state == "SC")
+
+state <- state %>%
+  group_by(election_date, county_name)
+
+state_count <- state %>%
+  summarise(polling_place_id = n())
+```
 
 ## Chart Description
 
@@ -184,21 +196,21 @@ Write code in R or python to execute the steps you outlined above.
 Use the grammar of graphics to identify the components of the chart here, which provides the data for Wisconsin.
 ![Wisconsin counties where the number of polling places changed, 2012-2020](wisconsin-example.jpg){width="50%"}
 
--   geom:
+-   geom:line
 
 -   aesthetics: (list at least 3)
 
-    -   
+    -   x-axis: Date
 
-    -   
+    -   y-axis: Number of Polling Places Per County
 
-    -   
+    -   groups: Jurisdiction
 
 -   coordinate system:
 
--   y axis scale:
+-   y axis scale: continuous scale
 
--   x axis scale:
+-   x axis scale: date scale
 
 ## Chart
 
@@ -208,12 +220,26 @@ Write code in R or python to create a chart like that shown at the beginning of 
 Make sure your axes are labeled (5 pts) and your chart has a title (5 pts).
 Include your plot in this document and make sure you have a figure caption that describes what someone should notice in the chart (5 pts) You may do this either by modifying the chunk options or by using `include=F` and manually including the picture with a caption.
 
+```{r}
+ggplot(state_count, aes(x=election_date, y=polling_place_id, group=county_name)) +
+  geom_line()+
+  labs(title = "Number of Polling Places over Time",
+       x="Election Date",
+       y="Number of Polling Places Per County") +
+  theme_minimal()
+```
+
 ## Modifications
 
 Evaluate the chart you created for comprehensibility and accessibility.
 (1 pt)
 
+I believe simplifying the legend is needed because there are so many jurisdictions that all the lines are mashed together and are unclear.
+
 What modifications might you add to this chart to make it clearer and more understandable?
+
+For simplifying the legend, I believe grouping similar counties together would allow viewers to see the graph clearer.
+
 (2 pts)
 
 # Data Processing
@@ -243,6 +269,13 @@ COMMUNITY CENTER, 1168 HWY 84, SILAS, AL 36919
 
 Write out the steps your function will need to accomplish in plain language.
 
+1)  Split the address string by commas to separate different components of the address
+2)  Identify the building number and street from the address. Parse if the building number is combined with the street name.
+3)  Identify the city, state, and zip code components of the address.
+4)  For addresses without street numbers, it will be put as NA
+5)  For addresses with additional information, take those out
+6)  Return theseparated address components (building number, street, city, state, zip code) as a list
+
 ## Function Code - Single Address
 
 (5 pts)
@@ -252,7 +285,51 @@ Write a function, `address_parser`, which can handle a single address and return
 (change this chunk to python if you'd prefer to use python over R for this task)
 
 ```{r single-address-parser}
+address_parser <- function(address) {
+  #initialize variables to store
+  building_number <- NA
+  street <- NA
+  city <- NA
+  state <- NA
+  zipcode <- NA
+  
+  #split the address with commas
+  address_parts <- strsplit(address, ",")[[1]]
+  
+  #identify the address components
+  for(part in address_parts) {
+    part <- trimws(part)
+    
+    #check if part contains digits
+    if(grepl("\\d", part)) {
+      building_number <- part
+    }
+    #check is part contains state abbreviation
+    else if(nchar(part) == 2 & toupper(part)==part){
+      state <- part
+    }
+    #check if part is zipcode
+    else if(grepl("\\d", part) & nchar(part) >=5){
+      zipcode <- part
+    } else {
+      if(is.na(street)) {
+        street <- part
+      } else {
+        city <- part
+      }
+    }
+  }
 
+#create list to store address components
+address_components <- list(
+  building_number = building_number,
+  street = street,
+  city = city,
+  state = state,
+  zipcode = zipcode
+)
+return(address_components)
+}
 ```
 
 This chunk will test your function on the addresses provided as examples.
@@ -278,7 +355,24 @@ Write a function, `address_vec`, which can parse a vector of addresses and retur
 (change this chunk to python if you'd prefer to use python over R for this task)
 
 ```{r vector-address-parser}
-
+address_vec <- function(addresses) {
+  #initialize data frame to store parsed address components
+  parsed_addresses<- data.frame(
+    building_number = character(),
+    street = character(),
+    state = character(),
+    city = character(),
+    zipcode = character(),
+    stringsAsFactors = FALSE
+  )
+  
+  #parse each address
+  for(address in addresses) {
+    parsed_address <- address_parser(address)
+    prased_addresses <- rbind(parsed_addresses, parsed_address)
+  }
+  return(parsed_addresses)
+}
 ```
 
 This chunk will test your function on the addresses provided as examples.
@@ -300,8 +394,17 @@ Use your function to parse a vector of the unique polling place addresses in you
 (5 pts)
 
 ```{r r-function-eval}
+state <- filter(tidy_tuesday, state == "SC")
 
+unique_addresses <- unique(state$address)
+
+parsed_addresses <- address_vec(unique_addresses)
+
+print(parsed_addresses)
 ```
 
 Where did your function have issues, if it did?
 (5 pts)
+
+My code did not print out what I wanted it to print.
+I believe it has something to do with the parsed address section
